@@ -1,10 +1,14 @@
+$ip01="71"
+$ip02="72"
+$ip03="73"
 servers=[
   {
     :hostname => "server1",
-    :ip => "192.168.0.11",
+    :ip => "192.168.0."+$ip01,
     #in MSWin it gives you names: VBoxManage.exe list bridgedifs
     #:bridge => "Intel(R) Ethernet Connection (2) I219-V",
-    :bridge => "enp0s31f6",
+    #:bridge => "enp0s31f6",
+    :bridge => "wlp3s0",
     #:box => "42n4/UbuntuServerYakkety",
     :box => "42n4/ubuntu",
     :ram => 2048,
@@ -13,10 +17,11 @@ servers=[
   },
   {
     :hostname => "server2",
-    :ip => "192.168.0.12",
+    :ip => "192.168.0."+$ip02,
     #in MSWin it gives you names: VBoxManage.exe list bridgedifs
     #:bridge => "Intel(R) Ethernet Connection (2) I219-V",
-    :bridge => "enp0s31f6",
+    #:bridge => "enp0s31f6",
+    :bridge => "wlp3s0",
     #:box => "42n4/UbuntuServerYakkety",
     :box => "42n4/ubuntu",
     :ram => 2048,
@@ -25,10 +30,11 @@ servers=[
   },
   {
     :hostname => "server3",
-    :ip => "192.168.0.13",
+    :ip => "192.168.0."+$ip03,
     #in MSWin it gives you names: VBoxManage.exe list bridgedifs
     #:bridge => "Intel(R) Ethernet Connection (2) I219-V",
-    :bridge => "enp0s31f6",
+    #:bridge => "enp0s31f6",
+    :bridge => "wlp3s0",
     #:box => "42n4/UbuntuServerYakkety",
     :box => "42n4/ubuntu",
     :ram => 2048,
@@ -61,4 +67,16 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell",
     run: "always",
     inline: "sed -i 's/192.168.2/192.168.0/g' /usr/local/bin/va_hosts4ssh"
+  config.vm.provision "shell",
+    run: "always",
+    inline: "sed -i 's/192.168.2/192.168.0/g' /usr/local/bin/va_ceph.conf"
+  config.vm.provision "shell",
+    run: "always",
+    inline: "sed -i 's/ip01=11/ip01="+$ip01+"/g' /usr/local/bin/va_hosts4ssh"
+  config.vm.provision "shell",
+    run: "always",
+    inline: "sed -i 's/ip02=12/ip02="+$ip02+"/g' /usr/local/bin/va_hosts4ssh"
+  config.vm.provision "shell",
+    run: "always",
+    inline: "sed -i 's/ip03=13/ip03="+$ip03+"/g' /usr/local/bin/va_hosts4ssh"
 end

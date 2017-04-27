@@ -14,7 +14,7 @@ To build images, simply run:
 git clone https://github.com/pwasiewi/packer-ubuntu
 cd packer-ubuntu
 export ATLAS_TOKEN=the token string taken from Atlas https://atlas.hashicorp.com/settings/tokens
-packer build template.json
+packer build -only=virtualbox-iso template.json
 ```
 
 If you want to build only virtualbox, vmware or qemu, but now only virtualbox one works with ceph.

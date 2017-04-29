@@ -30,7 +30,7 @@ Next, try to execute it in a new directory:
 
 ```
 #vagrant destroy -f #remove ALL previous instances
-vagrant box update  #update this box in order to make 3 hosts
+#vagrant box update  #update this box in order to make 3 hosts
 wget https://raw.githubusercontent.com/pwasiewi/packer-ubuntu/master/Vagrantfile.3hosts -O Vagrantfile
 sed -i 's/192.168.0/192.168.<your local net number>/g' Vagrantfile
 sed -i 's/enp0s31f6/eth0/g' Vagrantfile # you change the host bridge name if it is not 'enp0s31f6'

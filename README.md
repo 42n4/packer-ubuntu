@@ -25,6 +25,7 @@ packer build -only=vmware-iso template.json
 packer build -only=qemu template.json
 ```
 
+## Setting up the proxmox cluster (START FOR BEGINNERS!)
 Next, try to execute it in a new directory:  
 
 ```

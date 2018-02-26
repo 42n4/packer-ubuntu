@@ -1,10 +1,10 @@
 #!/bin/bash
 set -ex
-wget https://apt.puppetlabs.com/puppetlabs-release-pc1-yakkety.deb
-dpkg -i puppetlabs-release-pc1-yakkety.deb
+#wget https://apt.puppetlabs.com/puppetlabs-release-pc1-yakkety.deb
+#dpkg -i puppetlabs-release-pc1-yakkety.deb
 apt-get update
 apt-get upgrade -y
-apt install -y puppet-master
+#apt install -y puppet-master
 apt remove -y linux-image-extra-`uname -r` linux-firmware
 #echo "UseDNS no" >> /etc/ssh/sshd_config
 #ntpdate 0.us.pool.ntp.org

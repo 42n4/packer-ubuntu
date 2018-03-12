@@ -5,13 +5,14 @@ set -ex
 apt-get update
 apt-get upgrade -y
 #apt install -y puppet-master
-apt install -y iproute2
+apt install -y net-tools gpm zfsutils-linux btrfs-tools
 apt remove -y linux-image-extra-`uname -r` linux-firmware
 #echo "UseDNS no" >> /etc/ssh/sshd_config
 #ntpdate 0.us.pool.ntp.org
 hwclock --systohc
 systemctl restart ntp
 systemctl enable ntp
+systemctl enable sshd
 #ufw status verbose
 #ufw disable
 [ -f /etc/ansible/hosts ] && mv /etc/ansible/hosts /etc/ansible/hosts.orig -f

@@ -2,7 +2,7 @@
   "variables": {
     "vagrant_username": "42n4",
     "vagrant_name": "ubuntu",
-    "version": "1.8",
+    "version": "1.9",
     "cloud_token": "{{ env `VAGRANT_CLOUD_TOKEN` }}",
     "iso_url": "http://us.archive.ubuntu.com/ubuntu/dists/artful/main/installer-amd64/20101020ubuntu523/images/netboot/mini.iso",
     "iso_checksum": "05db73efd450156d81a519d35bc7b8109101e12d7ee8d49da695778df568cb36",

@@ -1,4 +1,4 @@
-$ip01="71"
+ip01="71"
 $ip02="72"
 $ip03="73"
 #in MSWin it gives you names: VBoxManage.exe list bridgedifs

@@ -1,0 +1,190 @@
+##############################################################################################
+#Uruchamiam Cepha na 3 maszynach vagrant Mini Ubuntu
+#TUTAJ JEST GŁÓWNY SKRYPT 
+#GŁÓWNY SKRYPT
+#curl https://pastebin.com/raw/GQF1MwtB | sed 's/\r//g' > VAskryptglownyMiniUbuntu.txt 
+#DALEJ PASTUJ LINIE z PLIKU GŁÓWNEGO skryptglowny.txt
+#lub z podanego powyżej adresu pastebin oraz uruchamiaj FUNKCJE
+#vim VAskryptglownyUbuntu.txt #paste sth
+ 
+##############################################################################################
+#FUNKCJE DO TEGO SKRYPTU W OSOBNYM SKRYPCIE
+curl https://pastebin.com/raw/anHdueta | sed 's/\r//g' > VAskryptfunkcje.sh
+sh VAskryptfunkcje.sh
+
+##############################################################################################
+#TWORZENIE MASZYNY VM Z LINII KOMENDY
+export VM="MiniUbuntu"
+export VBOS="Ubuntu_64"
+export VBFOLDER="/mnt/dc/VBox/"
+export ISO4VM="/mnt/dc/IMAGES/miniubuntu1610.iso"
+VACreateVM $VM $VBOS $VBFOLDER $ISO4VM
+
+##############################################################################################
+#INSTALACJA SYSTEMU Z ISO NA VM z openssh-server zaznaczonym
+VBoxManage startvm $VM # --type headless
+#VBoxHeadless --startvm $VM &
+#WPISAĆ DO MASZYNY VM
+#zaloguj się na vagrant konto, jakie załozyłeś podczas instalacji, zmień hasło roota
+#passwd
+#sed -i 's/prohibit-password/yes/g' /etc/ssh/sshd_config
+#systemctl restart sshd
+
+##############################################################################################
+#BEZPIECZNE WYŁĄCZENIE MASZYNY
+VBoxManage controlvm $VM acpipowerbutton
+sleep 20
+VAChangeVMStorage $VM
+VBoxManage startvm $VM --type headless
+#ssh -p 2222 root@127.0.0.1
+sleep 30 
+curl https://pastebin.com/raw/anHdueta | sed 's/\r//g' > VAskryptfunkcje.sh
+sh VAskryptfunkcje.sh
+sed -i '/:2222/d'  ~/.ssh/known_hosts
+scp -rp -P 2222 /usr/local/bin/va_* root@127.0.0.1:/usr/local/bin &&\
+ssh -p 2222 root@127.0.0.1 /usr/local/bin/va_update_vmubuntu
+
+#DODAWANIE I USUWANIE dzielonych katalogów (vagrant ma swoje własne katalogi):
+#VBoxManage sharedfolder add $VM --name SHARED --hostpath /mnt/dc/SHARED --automount
+#VBoxManage sharedfolder remove $VM --name SHARED
+#To mount it on the guest:
+#sudo mount -t vboxsf -o uid=$UID SHARED /mnt/dc/SHARED
+#SNAPSHOTY BACKUPY
+#VBoxManage snapshot $VM take shot`date +%y%m%d`
+#VBoxManage snapshot $VM restore shot`date +%y%m%d`
+#KLONOWANIE MASZYNY
+#VBoxManage export $VM --output vmClone`date +%y%m%d`.ovf --options manifest,nomacs
+#macaddr=$(echo `uname -a`|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/08:00:27:\3:\4:\5/')
+#VBoxManage modifyvm $VM --macaddressX $macaddr
+#domyślnie zmienia mac i nazwy
+#VBoxManage import vmClone`date +%y%m%d`.ovf
+
+##############################################################################################
+#TWORZYMY VAGRANT MASZYNĘ Z VIRTUALBOX MASZYNY
+VBoxManage controlvm $VM  acpipowerbutton
+sleep 20
+VBoxManage storageattach $VM --storagectl IDE --port 0 --device 0 --type dvddrive --medium none
+[ -e ${VBFOLDER}/v${VM}.box ] && rm ${VBFOLDER}/v${VM}.box
+vagrant box remove v${VM} --force
+vagrant package --output ${VBFOLDER}/v${VM}.box --base $VM
+vagrant box add v${VM} ${VBFOLDER}/v${VM}.box --force
+#DODAJ ${VBFOLDER}/v${VM}.box do zbioru obrazów atlas
+#https://atlas.hashicorp.com/vagrant
+#https://atlas.hashicorp.com/settings/tokens
+#to samo można zrobić packerem
+#https://github.com/uchida/packer-ubuntu
+
+##############################################################################################
+cd 
+vagrant box list
+rm -rf v${VM}
+[ ! -d v${VM} ] && mkdir v${VM}
+cd v${VM}
+#vagrant init v${VM}
+#dla trzech maszyn, a nie dla jednej
+#https://www.vagrantup.com/docs/provisioning/shell.html
+#sed -i 's/^end/\ \ config.vm.provision "shell", inline: "echo server1 > \/etc\/hostname"\n end/g' Vagrantfile
+cp /usr/local/bin/Vagrantfile.3Ubuntu Vagrantfile
+sed -i 's/vUbuntu1610/'v${VM}'/g' Vagrantfile
+vagrant up --provision
+vagrant ssh server1
+
+#w przypadku gdy na koncie vagrant zmienił się publiczny klucz vagranta w .ssh/authorized_keys
+#należy logować się po haśle, zmienić Vagrantfile od razu po vagrant init nazwa_boxa
+#https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html
+#sed -i 's/^end/\ \ config.ssh.password="vagrant"\n end/g' Vagrantfile
+#jeśli nie wstawimy config.ssh.password jak wyżej, to pastujemy klucz insecure vagranta do maszyny na konto vagrant:
+#wget https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub -O ~/.ssh/authorized_keys
+#chmod 700 ~/.ssh
+#chmod 600 ~/.ssh/authorized_keys
+#chown -R vagrant:vagrant ~/.ssh
+#po tym: vagrant halt && vagrant up && vagrant ssh
+#http://www.thisprogrammingthing.com/2016/fixing-vagrant-connection-error/
+
+#usuwanie maszyn vagranta z nazwami na v* z VirtualBoxa
+cd $VBFOLDER && for i in v${VM}*; do VBoxManage controlvm $i poweroff; VBoxManage unregistervm --delete $i; done && cd 
+
+#https://atlas.hashicorp.com/boxes/search
+#https://github.com/Zuehlke/linux-developer-vm
+
+
+#arp-scan 192.168.2.0/24 --interface=enp0s31f6
+#vagrantfile for public ip http://ix.io/q2t, dla dwóch serwerów http://ix.io/q2y, dla trzech serwerów http://ix.io/qdE
+
+#https://groups.google.com/forum/#!topic/vagrant-up/thrR2PRodQE
+#https://programmaticponderings.com/2014/12/14/installing-puppet-master-and-agents-on-multiple-vm-using-vagrant-and-virtualbox/
+#https://blog.kloudless.com/2013/07/01/automating-development-environments-with-vagrant-and-puppet/
+#http://kappataumu.com/articles/creating-an-Ubuntu-VM-with-packer.html
+#https://marcofranssen.nl/packer-io-machine-building-and-provisioning-part-1/
+#https://github.com/pwasiewi/packer-ubuntu
+#https://www.sitepoint.com/getting-started-vagrant-windows/
+#https://ttmm.io/tech/vagrant-windows/
+#https://www.digitalocean.com/community/tutorials/how-to-create-ansible-playbooks-to-automate-system-configuration-on-ubuntu
+#https://github.com/jimradford/superputty/releases/tag/1.4.0.8
+#https://github.com/mintty/wsltty/releases
+#https://github.com/freeciv/freeciv-web #Vagrantfile
+#http://packetpushers.net/ansible-development-vagrant/
+
+##################################################################################
+##################################################################################
+### CEPH #########################################################################
+##################################################################################
+##################################################################################
+
+#http://www.virtualtothecore.com/en/adventures-ceph-storage-part-1-introduction/
+#https://blog.zhaw.ch/icclab/tag/ceph/
+#https://wiki.centos.org/SpecialInterestGroup/Storage/ceph-Quickstart
+#http://linoxide.com/storage/setup-red-hat-ceph-storage-centos-7-0/
+#http://karan-mj.blogspot.com/2013/12/what-is-ceph-ceph-is-open-source.html
+#https://www.reddit.com/r/DataHoarder/comments/4gzpxi/why_is_ceph_so_rare_for_home_use_even_among
+#http://palmerville.github.io/2016/04/30/single-node-ceph-install.html
+[ ! -d ceph-deploy ] && mkdir ceph-deploy
+cd ceph-deploy/
+#INICJALIZACJA CEPHA
+va_ceph_init
+#TESTOWANIE CEPHA
+#va_ceph_create
+#object storage gateway
+ceph-deploy rgw create server1 server2 server3
+#cephfs
+ceph-deploy mds create server1 server2 server3
+ceph -s #ceph status
+ceph osd tree
+ceph mon_status
+ceph osd pool create mypool 1
+ceph osd lspools
+ceph df
+echo "test data" > testfile
+rados put -p mypool testfile testfile
+rados -p mypool ls
+rados -p mypool setomapval testfile mykey myvalue
+rados -p mypool getomapval testfile mykey
+rados get -p mypool testfile testfile2
+md5sum testfile testfile2
+ceph osd pool create cephfs_data 128
+ceph osd pool create cephfs_metadata 128
+ceph fs new cephfs cephfs_metadata cephfs_data
+[ ! -d /mnt/mycephfs ] && mkdir /mnt/mycephfs
+#mount -t ceph server1:6789:/ /mnt/mycephfs -o name=admin,secret=`cat /etc/ceph/ceph.client.admin.keyring | grep key | cut -f 2 | sed 's/key = //g'`
+mount -t ceph `ifconfig enp0s8 | grep inet\ | awk '{print $2}'`:6789:/ /mnt/mycephfs -o name=admin,secret=`cat /etc/ceph/ceph.client.admin.keyring | grep key | cut -f 2 | sed 's/key = //g'`
+
+#test wydajności dysku ceph, gdzie -s rozmiar pliku MB, -r ilość ram MB (domyślne wartości: 8192 i dostępna pamięć)
+free && sync && echo 3 > /proc/sys/vm/drop_caches && free
+bonnie++ -s 2048 -r 1024 -u root -d /mnt/mycephfs -m BenchClient
+
+#https://wiki.mikejung.biz/Sysbench#Install_Sysbench_on_CentOS_7
+#http://www.servernoobs.com/avoiding-cpu-speed-scaling-in-modern-linux-distributions-running-cpu-at-full-speed-tips/
+#for CPUFREQ in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor;
+#do [ -f $CPUFREQ ] || continue;
+#  echo -n performance > $CPUFREQ;
+#done          
+grep -E '^model name|^cpu MHz' /proc/cpuinfo  
+sysbench --test=cpu --cpu-max-prime=10000 --num-threads=4 run
+#sysbench --test=fileio --file-test-mode=rndwr run
+#sysbench --test=fileio help
+#sysbench --test=fileio --file-test-mode=seqwr --num-threads=1 --file-block-size=4096 run
+#sysbench --test=fileio --file-test-mode=rndwr --num-threads=1 --file-block-size=4096 run  
+#http://cromwell-intl.com/linux/performance-tuning/disks.html
+echo 3 | sudo tee /proc/sys/vm/drop_caches && sudo sync
+iperf -s #pomiar przepustowości sieci, uruchamiamy na jednym serwerze np. server1
+iperf -c server1 -i1 -t 10  #na drugim serwerze mierzymy

@@ -1,12 +1,12 @@
-ip01="71"
+$ip01="71"
 $ip02="72"
 $ip03="73"
 #in MSWin it gives you names: VBoxManage.exe list bridgedifs
 #$bridge = "Intel(R) Ethernet Connection (2) I219-V"
 $bridge = "enp0s31f6"
 #$bridge="wlp3s0"
-#$box = "42n4/UbuntuServerYakkety"
-$box="42n4/ubuntu"
+$box = "42n4/UbuntuServer"
+#$box="42n4/ubuntu"
 $net="192.168.0."
 servers=[
   {
@@ -17,25 +17,26 @@ servers=[
     :ram => 2048,
     :cpu => 2,
     :mac => "02002751a1bc"
-  },
-  {
-    :hostname => "server2",
-    :ip => $net+$ip02,
-    :bridge => $bridge,
-    :box => $box,
-    :ram => 2048,
-    :cpu => 2,
-    :mac => "0200272864d1"
-  },
-  {
-    :hostname => "server3",
-    :ip => $net+$ip03,
-    :bridge => $bridge,
-    :box => $box,
-    :ram => 2048,
-    :cpu => 2,
-    :mac => "020027092383"
   }
+#  ,
+#  {
+#    :hostname => "server2",
+#    :ip => $net+$ip02,
+#    :bridge => $bridge,
+#    :box => $box,
+#    :ram => 2048,
+#    :cpu => 2,
+#    :mac => "0200272864d1"
+#  },
+#  {
+#    :hostname => "server3",
+#    :ip => $net+$ip03,
+#    :bridge => $bridge,
+#    :box => $box,
+#    :ram => 2048,
+#    :cpu => 2,
+#    :mac => "020027092383"
+#  }
 ]
 Vagrant.configure(2) do |config|
     servers.each do |machine|

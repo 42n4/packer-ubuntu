@@ -4,7 +4,7 @@
 
 packer template to build Ubuntu Server images
 
-vagrant images are available at [42n4/proxmoxbeta](https://app.vagrantup.com/42n4/boxes/ubuntu).
+vagrant images are available at [42n4 vagrant account](https://app.vagrantup.com/42n4/boxes/ubuntu).
 
 ## Building Images
 

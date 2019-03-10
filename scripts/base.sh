@@ -6,13 +6,15 @@ apt-get update
 apt-get upgrade -y
 #apt install -y puppet-master
 apt install -y ifupdown net-tools gpm zfsutils-linux btrfs-tools software-properties-common
-add-apt-repository ppa:gluster/glusterfs-3.11 -y
+add-apt-repository ppa:gluster/glusterfs-5 -y
+apt-get update
 #apt-get install -y glusterfs-server
 #apt-get -y install python-ceph
-apt-get -y install lxd
+#apt-get -y install lxd
 #echo 'Defaults:ubuntu !requiretty\nubuntu ALL = (root) NOPASSWD:ALL' >  /etc/sudoers.d/ceph
 #chmod 440 /etc/sudoers.d/ceph
-apt remove -y linux-image-extra-`uname -r` linux-firmware
+#apt remove -y linux-image-extra-`uname -r` linux-firmware
+apt remove -y linux-firmware
 #echo "UseDNS no" >> /etc/ssh/sshd_config
 #ntpdate 0.us.pool.ntp.org
 hwclock --systohc

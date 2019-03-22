@@ -2,10 +2,10 @@
   "variables": {
     "vagrant_username": "42n4",
     "vagrant_name": "UbuntuServer",
-    "version": "0.7",
+    "version": "1.1",
     "cloud_token": "{{ env `VAGRANT_CLOUD_TOKEN` }}",
-    "iso_url": "http://us.archive.ubuntu.com/ubuntu/dists/artful/main/installer-amd64/20101020ubuntu523/images/netboot/mini.iso",
-    "iso_checksum": "05db73efd450156d81a519d35bc7b8109101e12d7ee8d49da695778df568cb36",
+    "iso_url": "http://archive.ubuntu.com/ubuntu/dists/cosmic-updates/main/installer-amd64/current/images/netboot/mini.iso",
+    "iso_checksum": "e55afd45fe680d22139b70364123d4b62f494c6e0585b28a5ebfd4bf2a3ee42d",
     "iso_checksum_type": "sha256",
     "boot_command": "<tab><wait><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>/linux initrd=/initrd.gz auto=true noapic=true fb=false hostname=localhost locale=en_US keyboard-configuration/modelcode=SKIP",
     "boot_wait": "20s",
